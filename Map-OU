@@ -1,0 +1,57 @@
+$out = "c:\t.txt"
+$dc = Get-ADDomainController -filter *
+$users = Get-ADUser -Filter * -Properties *
+$computers = Get-ADComputer -Filter * -Properties *
+$groups = Get-ADGroup -Filter * -Properties *
+$ou = Get-ADOrganizationalUnit -Filter * -Properties * -SearchScope OneLevel
+
+$depth = 0
+$hline = "$([char]0x2500)"*4
+$vline = [char]0x2502
+$angle = [char]0x2514
+$tangle =[char]0x251c
+
+function Get-OU($DN)
+{
+    $unit = Get-ADOrganizationalUnit -Filter * -Properties * -SearchBase $DN -SearchScope OneLevel -ErrorAction SilentlyContinue 
+    return $unit
+}
+
+function map-ou($org)
+{
+    $count = $org.count 
+    for ($i = 0; $i -lt $count; $i++)
+    { 
+        $unit = Get-OU $org[$i].DistinguishedName
+        if($depth -ne 0)
+        {
+            if($i -lt ($count -1)){
+                Write-Host "$vline$(" "*$depth)$vline`n$vline$(" "*$depth)$vline`n$vline$(" "*$depth)$tangle$hline $($org[$i].ou)" #>> $out
+            }
+            else
+            {
+                Write-Host "$vline$(" "*$depth)$vline`n$vline$(" "*$depth)$vline`n$vline$(" "*$depth)$angle$hline $($org[$i].ou)" #>> $out
+            }
+        }
+        else
+        {
+            if($i -lt ($count -1))
+            {
+                Write-Host "$(" "*$depth)$vline`n$(" "*$depth)$vline`n$(" "*$depth)$tangle$hline $($org[$i].ou)" #>> $out
+            }
+            else
+            {
+                Write-Host "$(" "*$depth)$vline`n$(" "*$depth)$vline`n$(" "*$depth)$angle$hline $($org[$i].ou)" #>> $out
+            }
+        }
+        if($unit -ne $null)
+        {
+            $depth = $depth+6
+            map-ou $unit
+            $depth = 0
+        }
+    }  
+}
+
+Write-Host "`n$(($dc.forest | select -First 1).ToUpper())" >> $out #-BackgroundColor DarkGray >> $out
+map-ou $ou >> $out
