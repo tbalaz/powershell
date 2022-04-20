@@ -1,0 +1,27 @@
+function Write-ToBox()
+{
+    param([string]$message)
+    
+    $length = $message.Split("`r`n") | %{ $_.length } | sort -Descending | select -First 1
+
+    $rowLength = 20+$length
+
+    Write-Host "$([char]0x2554)$("$([char]0x2550)"*($rowLength))$([char]0x2557)"
+    
+    $message.Split("`r`n") | %{ 
+        if($_ -ne "")
+        {
+            $out = $([char]0x2551)
+            $out += $(" "*[math]::Floor((($rowLength-$_.length)/2)))
+            $out += $($_)
+            $out += $(" "*[math]::Ceiling((($rowLength - $_.length)/2)))
+            $out += $([char]0x2551)
+            
+            Write-Host $out
+        }
+    }
+
+    Write-Host "$([char]0x255a)$("$([char]0x2550)"*($rowLength))$([char]0x255d)"
+}
+
+Write-ToBox "Put this message in box."
