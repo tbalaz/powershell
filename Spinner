@@ -1,0 +1,78 @@
+$X = $Host.UI.RawUI.CursorPosition.X
+$Y = $Host.UI.RawUI.CursorPosition.Y
+$c = [Enum]::GetValues([ConsoleColor])
+$myNextRun = (Get-Date).AddSeconds(2.5)
+
+
+function right()
+{   
+    $Host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates (0),($Host.UI.RawUI.CursorPosition.Y)
+    Write-Host $([char]0x2554) -ForegroundColor $color -NoNewline
+    for ($i = 1; $i -lt 26; $i++)
+    { 
+        Start-Sleep -MilliSeconds 50
+        $Host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates ($i),($Host.UI.RawUI.CursorPosition.Y)
+        Write-Host $([char]0x2550) -ForegroundColor $color -NoNewline 
+    }
+}
+
+function down()
+{
+    $startX = $Host.UI.RawUI.CursorPosition.X
+    $startY = $Host.UI.RawUI.CursorPosition.Y
+    for ($i = 0; $i -lt 2; $i++)
+    { 
+        Start-Sleep -MilliSeconds 50
+        $Host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates ($startX),($startY+$i)
+        Write-Host $([char]0x2557) -ForegroundColor $color -NoNewline
+    }
+}
+
+function left()
+{
+    $startX = $Host.UI.RawUI.CursorPosition.X-1
+    $startY = $Host.UI.RawUI.CursorPosition.Y
+    $Host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates ($startX),($startY)
+    Write-Host $([char]0x255d) -ForegroundColor $color -NoNewline
+    for ($i = $startX-1; $i -gt -1; $i--)
+    { 
+        start-sleep -Milliseconds 10
+        $Host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates ($i),($startY)
+        Write-Host $([char]0x2550) -ForegroundColor $color -NoNewline    
+    }
+}
+
+function up()
+{
+    $startX = $Host.UI.RawUI.CursorPosition.X
+    $startY = $Host.UI.RawUI.CursorPosition.Y
+    for ($i = $startY; $i -gt $Y-1; $i--)
+    { 
+        Start-Sleep -MilliSeconds 50
+        $Host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates (0),($i)
+        Write-Host $([char]0x255a) -ForegroundColor $color -NoNewline
+    }
+}
+
+while((Get-Date) -lt $myNextRun)
+{
+    $color = $c[(Get-Random -Minimum 0 -Maximum $($c.Length -1))]
+    if((Get-Date) -lt $myNextRun)
+    {
+        right
+    }
+    if((Get-Date) -lt $myNextRun)
+    {
+        down
+    }
+    if((Get-Date) -lt $myNextRun)
+    {
+        left
+    }
+    if((Get-Date) -lt $myNextRun)
+    {
+        up
+    }
+}
+Write-Host "`n"
+exit
