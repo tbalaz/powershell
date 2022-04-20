@@ -1,0 +1,31 @@
+$myX = $Host.UI.RawUI.CursorPosition.X
+$myY = $Host.UI.RawUI.CursorPosition.Y
+$mySequence = "█" #░▒▓
+$myChar = 0
+$c = [Enum]::GetValues([ConsoleColor])
+$myNextRun = (Get-Date).AddSeconds(5)
+
+while((Get-Date) -lt $myNextRun)
+{
+    $color = $c[(Get-Random -Minimum 0 -Maximum $($c.Length -1))]
+    for ($i = 0; $i -lt 50; $i++)
+    {
+        if((Get-Date) -lt $myNextRun)
+        {
+            $Host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates ($i),($myY)
+            start-sleep -Milliseconds 50
+            Write-Host $mySequence[(Get-Random -Minimum 0 -Maximum $($mySequence.Length))] -ForegroundColor $color -NoNewline
+        }
+    }
+    $color = $c[(Get-Random -Minimum 0 -Maximum $($c.Length -1))]
+    for ($i = 50; $i -gt -1; $i--)
+    {
+        if((Get-Date) -lt $myNextRun)
+        {
+            $Host.UI.RawUI.CursorPosition = New-Object System.Management.Automation.Host.Coordinates ($i),($myY)
+            start-sleep -Milliseconds 10
+            Write-Host $mySequence[(Get-Random -Minimum 0 -Maximum $($mySequence.Length))] -ForegroundColor $color -NoNewline
+        }
+    }
+}
+exit
